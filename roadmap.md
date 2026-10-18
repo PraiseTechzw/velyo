@@ -1,0 +1,7 @@
+- [x] Add validated contact form with private question storage.
+- [x] Add FAQ and page navigation links.
+- [x] Verify submission, FAQ and mobile layout.
+- [x] Replace generic chat symbols with the WhatsApp mark.
+- [x] Add signup, login, password recovery and session-aware navigation.
+- [x] Add private business profiles, onboarding and editable account settings.
+- [ ] Verify signed-in onboarding, saved account details and business isolation — blocked until a real account is created and its email confirmed; no existing auth user is available for a test session.
