@@ -48,6 +48,10 @@ export type Database = {
           business_id: string;
           wa_id: string;
           display_name: string;
+          is_lead: boolean;
+          lead_status: string;
+          lead_interest: string;
+          lead_source: string;
           created_at: string;
           updated_at: string;
         };
@@ -56,10 +60,14 @@ export type Database = {
           business_id: string;
           wa_id: string;
           display_name?: string;
+          is_lead?: boolean;
+          lead_status?: string;
+          lead_interest?: string;
+          lead_source?: string;
           created_at?: string;
           updated_at?: string;
         };
-        Update: { display_name?: string; updated_at?: string };
+        Update: { display_name?: string; is_lead?: boolean; lead_status?: string; lead_interest?: string; lead_source?: string; updated_at?: string };
         Relationships: [];
       };
       conversations: {

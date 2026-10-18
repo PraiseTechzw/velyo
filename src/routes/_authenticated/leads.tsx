@@ -2,7 +2,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { getBusiness } from "@/lib/business.functions";
 import { pageHead } from "@/lib/page-head";
 import { DashboardShell } from "@/components/dashboard-shell";
-import { RecordsPage } from "@/components/dashboard-pages";
+import { LeadsPage } from "@/components/leads-page";
 const options = { queryKey: ["business"], queryFn: () => getBusiness() };
 export const Route = createFileRoute("/_authenticated/leads")({
   head: () => pageHead("Leads", "Follow up on WhatsApp customer interest and leads."),
@@ -12,4 +12,4 @@ export const Route = createFileRoute("/_authenticated/leads")({
   },
   component: Page,
 });
-function Page() { return <DashboardShell><RecordsPage kind="leads"/></DashboardShell>; }
+function Page() { return <DashboardShell><LeadsPage /></DashboardShell>; }

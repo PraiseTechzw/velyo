@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { businessSchema } from "./business-schema";
+import { z } from "zod";
 export const getBusiness = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -28,4 +29,18 @@ export const saveBusiness = createServerFn({ method: "POST" })
     });
     if (saved.error) throw new Error("Your business details could not be saved. Please try again.");
     return { id: saved.data };
+  });
+
+export const updateNotificationPreference = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: unknown) => z.object({ enabled: z.boolean() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: updated, error } = await context.supabase
+      .from("businesses")
+      .update({ notifications: data.enabled })
+      .eq("owner_id", context.userId)
+      .select("id")
+      .maybeSingle();
+    if (error || !updated) throw new Error("Notification preference could not be saved.");
+    return { enabled: data.enabled };
   });

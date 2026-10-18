@@ -25,10 +25,17 @@ export const getWhatsAppInbox = createServerFn({ method: "GET" })
 export const getWhatsAppConnection = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const { data: business, error: businessError } = await context.supabase
+      .from("businesses")
+      .select("id")
+      .eq("owner_id", context.userId)
+      .maybeSingle();
+    if (businessError) throw new Error("WhatsApp connection status could not be loaded.");
+    if (!business) return null;
     const { data, error } = await context.supabase
       .from("whatsapp_integrations")
-      .select("status,display_phone_number,last_error,verified_at")
-      .limit(1)
+      .select("status,display_phone_number,last_error,verified_at,business_account_id")
+      .eq("business_id", business.id)
       .maybeSingle();
     if (error) throw new Error("WhatsApp connection status could not be loaded.");
     return data;
