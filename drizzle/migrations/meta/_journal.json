@@ -15,6 +15,20 @@
       "when": 1792333011032,
       "tag": "0001_business_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792340102459,
+      "tag": "0002_business_profile_setup",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792340977000,
+      "tag": "0003_whatsapp_messaging",
+      "breakpoints": true
     }
   ]
 }

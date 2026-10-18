@@ -27,6 +27,8 @@ import { Route as AuthenticatedProductsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as ApiCronWhatsappRetriesRouteImport } from './routes/api.cron.whatsapp-retries'
+import { Route as ApiWhatsappWebhookRouteImport } from './routes/api.whatsapp.webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -118,6 +120,16 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiCronWhatsappRetriesRoute = ApiCronWhatsappRetriesRouteImport.update({
+  id: '/api/cron/whatsapp-retries',
+  path: '/api/cron/whatsapp-retries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWhatsappWebhookRoute = ApiWhatsappWebhookRouteImport.update({
+  id: '/api/whatsapp/webhook',
+  path: '/api/whatsapp/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -137,6 +149,8 @@ export interface FileRoutesByFullPath {
   '/reports': typeof AuthenticatedReportsRoute
   '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/api/cron/whatsapp-retries': typeof ApiCronWhatsappRetriesRoute
+  '/api/whatsapp/webhook': typeof ApiWhatsappWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -156,6 +170,8 @@ export interface FileRoutesByTo {
   '/reports': typeof AuthenticatedReportsRoute
   '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/api/cron/whatsapp-retries': typeof ApiCronWhatsappRetriesRoute
+  '/api/whatsapp/webhook': typeof ApiWhatsappWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -177,6 +193,8 @@ export interface FileRoutesById {
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/search': typeof AuthenticatedSearchRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/api/cron/whatsapp-retries': typeof ApiCronWhatsappRetriesRoute
+  '/api/whatsapp/webhook': typeof ApiWhatsappWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -198,6 +216,8 @@ export interface FileRouteTypes {
     | '/reports'
     | '/search'
     | '/settings'
+    | '/api/cron/whatsapp-retries'
+    | '/api/whatsapp/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -217,6 +237,8 @@ export interface FileRouteTypes {
     | '/reports'
     | '/search'
     | '/settings'
+    | '/api/cron/whatsapp-retries'
+    | '/api/whatsapp/webhook'
   id:
     | '__root__'
     | '/'
@@ -237,6 +259,8 @@ export interface FileRouteTypes {
     | '/_authenticated/reports'
     | '/_authenticated/search'
     | '/_authenticated/settings'
+    | '/api/cron/whatsapp-retries'
+    | '/api/whatsapp/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -244,6 +268,8 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiCronWhatsappRetriesRoute: typeof ApiCronWhatsappRetriesRoute
+  ApiWhatsappWebhookRoute: typeof ApiWhatsappWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -374,6 +400,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/cron/whatsapp-retries': {
+      id: '/api/cron/whatsapp-retries'
+      path: '/api/cron/whatsapp-retries'
+      fullPath: '/api/cron/whatsapp-retries'
+      preLoaderRoute: typeof ApiCronWhatsappRetriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/whatsapp/webhook': {
+      id: '/api/whatsapp/webhook'
+      path: '/api/whatsapp/webhook'
+      fullPath: '/api/whatsapp/webhook'
+      preLoaderRoute: typeof ApiWhatsappWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -419,6 +459,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiCronWhatsappRetriesRoute: ApiCronWhatsappRetriesRoute,
+  ApiWhatsappWebhookRoute: ApiWhatsappWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

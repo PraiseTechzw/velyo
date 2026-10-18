@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Bell, Calendar, ChevronDown, CircleHelp, FileText, Info, Layers, LayoutGrid, LogOut, Mail, Moon, Search, Settings, Sun, Users } from "lucide-react";
 import { getBusiness } from "@/lib/business.functions";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,8 +25,15 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [dark, setDark] = useState(false);
+  useEffect(() => {
+    setDark(window.localStorage.getItem("veylo-dashboard-theme") === "dark");
+  }, []);
   if (!data.business) return null;
   const name = data.profile.display_name || data.business.name;
+  function changeTheme(theme: "light" | "dark") {
+    window.localStorage.setItem("veylo-dashboard-theme", theme);
+    setDark(theme === "dark");
+  }
   async function signOut() {
     await qc.cancelQueries(); qc.clear(); await supabase.auth.signOut();
     await navigate({ to: "/auth", replace: true });
@@ -52,8 +59,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         <aside aria-label="Side navigation" className="flex w-12 shrink-0 flex-col justify-between gap-2">
           <div className="min-h-0 overflow-y-auto">
             <div className="mb-3 flex flex-col gap-1 rounded-full bg-background p-1.5 shadow-sm">
-              <Button aria-label="Light theme" title="Light theme" variant="ghost" size="icon" onClick={() => setDark(false)} className={`rounded-full ${!dark ? "bg-muted" : ""}`}><Sun /></Button>
-              <Button aria-label="Dark theme" title="Dark theme" variant="ghost" size="icon" onClick={() => setDark(true)} className={`rounded-full ${dark ? "bg-muted" : ""}`}><Moon /></Button>
+              <Button aria-label="Light theme" aria-pressed={!dark} title="Light theme" variant="ghost" size="icon" onClick={() => changeTheme("light")} className={`rounded-full ${!dark ? "bg-muted text-brand" : "text-muted-foreground"}`}><Sun /></Button>
+              <Button aria-label="Dark theme" aria-pressed={dark} title="Dark theme" variant="ghost" size="icon" onClick={() => changeTheme("dark")} className={`rounded-full ${dark ? "bg-muted text-brand" : "text-muted-foreground"}`}><Moon /></Button>
             </div>
             <nav className="flex flex-col gap-1 rounded-full bg-background p-1.5 shadow-sm">{sideNavigation.map(({ name: label, to, icon: I }) => <Button key={label} asChild variant="ghost" size="icon" className="rounded-full"><Link to={to} aria-label={label} title={label} activeOptions={{exact: true}} activeProps={{className: "bg-ink text-background hover:bg-ink hover:text-background"}} inactiveProps={{className: "text-muted-foreground"}}><I /></Link></Button>)}</nav>
           </div>
