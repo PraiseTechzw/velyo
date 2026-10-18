@@ -1,24 +1,25 @@
-# Spacious Landing Page
+# Veylo
 
-clone https://github.com/PraiseTechzw/spacious-landing-page-36d1e356
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/18a98242-4fec-451d-9fa7-dcf2386a22b7).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+WhatsApp sales and support automation for Zimbabwean businesses.
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Requirements: Bun and Node.js.
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+bun install
+bun run dev
 ```
+
+Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` for the browser client. Server functions also use `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`; admin operations require `SUPABASE_SERVICE_ROLE_KEY`. Set `DATABASE_URL` when running Drizzle migrations. Scheduled jobs use `CRON_SECRET` and optionally `CRON_SECRET_PREVIOUS` during secret rotation.
+
+## Commands
+
+```sh
+bun run build
+bun run preview
+bun run lint
+bun run test
+```
+
+Author: Praise Masunga

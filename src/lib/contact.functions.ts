@@ -4,7 +4,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { contactSchema } from "@/lib/contact-schema";
 
 export const sendContactQuestion = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => contactSchema.parse(input))
+  .validator((input: unknown) => contactSchema.parse(input))
   .handler(async ({ data }) => {
     const url = process.env["SUPABASE_URL"];
     const key = process.env["SUPABASE_PUBLISHABLE_KEY"];

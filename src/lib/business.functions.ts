@@ -10,7 +10,7 @@ export const getBusiness = createServerFn({ method: "GET" }).middleware([require
   if (profile.error || business.error || roles.error) throw new Error("Your business details could not be loaded.");
   return { profile: profile.data, business: business.data, roles: roles.data };
 });
-export const saveBusiness = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator((input) => businessSchema.parse(input)).handler(async ({ data, context }) => {
+export const saveBusiness = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).validator((input) => businessSchema.parse(input)).handler(async ({ data, context }) => {
   const { display_name, avatar_url, ...business } = data;
   const created = await context.supabase.rpc("create_business", { business_name: business.name, business_industry: business.industry });
   if (created.error) throw new Error("Your business could not be created.");
