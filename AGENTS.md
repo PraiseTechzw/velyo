@@ -15,3 +15,5 @@
 - Business creation and owner membership use an atomic database function; RLS isolates businesses and blocks client role writes and credential reads.
 - One root auth subscriber updates session-driven navigation and query invalidation; sign-out cancels and clears account queries before clearing the session.
 - Onboarding and account editing share a validated business form and schema so saved configuration follows one contract.
+- Dashboard destinations share DashboardShell for fixed navigation and account identity; each destination has its own authenticated route and head metadata.
+- Unconnected commerce views use explicitly marked sample data and never present local interactions as delivered messages or saved business records.

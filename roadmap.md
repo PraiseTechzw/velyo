@@ -5,3 +5,5 @@
 - [x] Add signup, login, password recovery and session-aware navigation.
 - [x] Add private business profiles, onboarding and editable account settings.
 - [ ] Verify signed-in onboarding, saved account details and business isolation — blocked until a real account is created and its email confirmed; no existing auth user is available for a test session.
+- [ ] Add all top-menu and side-rail destination pages with a shared fixed navigation.
+- [ ] Verify signed-in navigation, page interactions and narrow-screen layout.

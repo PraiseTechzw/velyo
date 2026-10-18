@@ -67,7 +67,7 @@ export function SiteHeader() {
             ))}
           </nav>
           <div className="flex items-center gap-2">
-            {!loading && (user ? <Button asChild><Link to="/account">My business</Link></Button> : <><Button asChild variant="ghost"><Link to="/auth">Log in</Link></Button><Button asChild className="hidden sm:inline-flex"><Link to="/auth" search={{ mode: "signup" }}>Sign up</Link></Button></>)}
+            {!loading && (user ? <Button asChild><Link to="/dashboard">Dashboard</Link></Button> : <><Button asChild variant="ghost"><Link to="/auth">Log in</Link></Button><Button asChild className="hidden sm:inline-flex"><Link to="/auth" search={{ mode: "signup" }}>Sign up</Link></Button></>)}
             <Button variant="ghost" size="icon"
               type="button"
               onClick={() => setOpen((o) => !o)}
@@ -87,7 +87,7 @@ export function SiteHeader() {
                   {l}
                 </a>
               ))}
-              <Button asChild className="mt-2">{user ? <Link to="/account" onClick={() => setOpen(false)}>My business</Link> : <Link to="/auth" search={{ mode: "signup" }} onClick={() => setOpen(false)}>Sign up</Link>}</Button>
+              <Button asChild className="mt-2">{user ? <Link to="/dashboard" onClick={() => setOpen(false)}>Dashboard</Link> : <Link to="/auth" search={{ mode: "signup" }} onClick={() => setOpen(false)}>Sign up</Link>}</Button>
             </div>
           </nav>
         </div>

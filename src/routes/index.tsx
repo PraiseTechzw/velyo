@@ -89,10 +89,10 @@ function Index() {
             <div className="float absolute bottom-40 right-8 z-10 hidden rounded-2xl glass px-4 py-3 text-xs font-semibold text-foreground shadow-xl md:block" style={{ animationDelay: "1.5s" }}>🛍️ New lead captured</div>
           </div>
           {/* notch with agent chips */}
-          <div className="relative -mt-32 flex w-fit flex-wrap gap-4 rounded-tr-[2.5rem] bg-background pr-6 pt-6">
+          <div className="relative -mt-32 flex w-full flex-wrap gap-4 rounded-tr-[2.5rem] bg-background pr-6 pt-6 sm:w-fit">
             {[[Headphones, "Customer", "Support"], [Sparkles, "Lead", "Capture"], [Calendar, "Sales", "Follow-ups"]].map(([I, a, b]: any) => (
-              <div key={a} className="w-36 rounded-2xl glass-soft p-4 text-sm font-semibold">
-                <I className="mb-3 h-5 w-5 text-brand" />{a}<br />{b}
+              <div key={a} className="min-h-[104px] w-[calc(33.333%-11px)] min-w-[105px] rounded-[1.5rem] bg-[oklch(0.97_0.02_158)] p-4 text-sm font-semibold leading-snug sm:w-36">
+                <I className="mb-3 h-5 w-5 text-brand" aria-hidden="true" />{a}<br />{b}
               </div>
             ))}
           </div>
@@ -102,7 +102,7 @@ function Index() {
       {/* Who */}
       <section data-reveal id="industry" className="mx-auto max-w-6xl px-6 py-20 text-center md:py-28">
         <p className="text-sm font-semibold tracking-widest text-destructive">WHO IT'S FOR</p>
-        <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">Built for Zimbabwean businesses that sell on WhatsApp</h2>
+        <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">Built for businesses that run on WhatsApp</h2>
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[[Store, "Clothing shops &", "boutiques"], [Truck, "Online retailers &", "delivery stores"], [Users, "Small & medium", "businesses"], [Rocket, "Growing African", "brands"]].map(([I, a, b]: any) => (
             <div key={a} className="lift rounded-3xl glass-soft p-7 text-left">
@@ -153,13 +153,16 @@ function Index() {
 
       {/* Yellow banner */}
       <section data-reveal className="mx-auto max-w-7xl px-6 pb-28">
-        <div className="relative grid items-end overflow-hidden rounded-[2.5rem] bg-sun px-6 pt-14 sm:px-10 md:grid-cols-2 md:px-16">
-          <div className="pb-16 self-center">
-            <h2 className="text-3xl font-semibold leading-tight tracking-tight text-navy md:text-5xl">No New App.<br />No Complex Software.<br /><span className="font-extrabold">Just Your WhatsApp,<br />Selling For You.</span></h2>
-            <a href="#features" className={`${btn} mt-10 border border-navy text-navy hover:bg-navy hover:text-sun`}>Learn more</a>
+        <div className="relative isolate min-h-[350px] px-7 pb-8 pt-10 sm:px-12 md:px-12 md:py-12">
+          <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden rounded-[2rem] bg-sun">
+            <div className="absolute right-0 top-0 h-[25%] w-[14%] rounded-bl-[2rem] bg-background" />
           </div>
-          <img src={womanPhone} alt="Woman smiling at her phone" loading="lazy" width={1024} height={1024} className="w-full max-w-md justify-self-center" />
-          <div className="absolute right-8 top-8 grid h-16 w-16 place-items-center rounded-full bg-brand text-primary-foreground shadow-xl"><MessageCircle className="h-8 w-8" /></div>
+          <div className="relative z-10 max-w-[58%] self-center pb-2 sm:max-w-[56%] md:max-w-[57%]">
+            <h2 className="text-[clamp(1.8rem,4vw,3.25rem)] font-semibold leading-[1.22] tracking-tight text-foreground">No New App.<br />No Complex Software.<br /><span className="font-extrabold">Just WhatsApp<br />With AI Behind It.</span></h2>
+            <a href="#features" className={`${btn} mt-6 border border-foreground/50 px-6 py-2 text-[11px] uppercase text-foreground hover:bg-foreground hover:text-sun`}>Learn more</a>
+          </div>
+          <img src={womanPhone} alt="Woman smiling at her phone" loading="lazy" width={1024} height={1024} className="pointer-events-none absolute -bottom-1 right-[13%] z-0 hidden h-[112%] w-auto max-w-none object-contain md:block" />
+          <div className="absolute right-6 top-5 z-10 grid h-14 w-14 place-items-center rounded-full bg-background text-brand sm:right-8 sm:top-3 sm:h-16 sm:w-16"><MessageCircle className="h-9 w-9" /></div>
         </div>
       </section>
 
