@@ -2,8 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { ArrowRight, ArrowLeft, Loader2, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
-import "@lovable.dev/cloud-auth-js/styles.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -45,9 +43,9 @@ function AuthPage() {
       }
     } catch (e) { setError(e instanceof Error ? e.message : "Please try again."); } finally { setBusy(false); }
   }
-  async function social(provider: "google" | "lovable") {
+  async function social() {
     setBusy(true); setError("");
-    try { const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: `${window.location.origin}/auth` }); if (result.error) throw result.error; }
+    try { const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${window.location.origin}/auth` } }); if (error) throw error; }
     catch (e) { setError(e instanceof Error ? e.message : "Sign-in failed."); } finally { setBusy(false); }
   }
   return <main className="min-h-screen bg-surface px-6 py-8 font-sans text-foreground">
@@ -64,7 +62,7 @@ function AuthPage() {
           {!forgot && <div className="space-y-2"><div className="flex items-center justify-between"><Label htmlFor="password">Password</Label>{mode === "login" && <Button type="button" variant="link" className="h-auto p-0 text-xs" onClick={() => { setForgot(true); setError(""); }}>Forgot password?</Button>}</div><Input id="password" name="password" type="password" required minLength={8} autoComplete={mode === "signup" ? "new-password" : "current-password"} className="h-11" />{mode === "signup" && <p className="text-xs text-muted-foreground">At least 8 characters.</p>}</div>}
           <Button disabled={busy} className="h-11 w-full" type="submit">{busy ? <Loader2 className="animate-spin" /> : <ArrowRight />}{forgot ? "Send reset link" : mode === "signup" ? "Create account" : "Log in"}</Button>
         </form>
-        {!forgot && <><div className="my-6 flex items-center gap-4 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />or continue with<span className="h-px flex-1 bg-border" /></div><div className="space-y-3"><Button variant="outline" disabled={busy} className="h-11 w-full bg-background" onClick={() => social("google")}>Continue with Google</Button><Button disabled={busy} className="lovable-auth-button w-full" onClick={() => social("lovable")}>Continue with Lovable</Button></div></>}
+        {!forgot && <><div className="my-6 flex items-center gap-4 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />or continue with<span className="h-px flex-1 bg-border" /></div><Button variant="outline" disabled={busy} className="h-11 w-full bg-background" onClick={social}>Continue with Google</Button></>}
       </>}
       {error && <p role="alert" className="mt-4 text-sm text-destructive">{error}</p>}
       {forgot && !message && <Button variant="link" className="mt-4 p-0" onClick={() => setForgot(false)}>Back to login</Button>}
