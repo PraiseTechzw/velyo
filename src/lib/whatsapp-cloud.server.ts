@@ -1,6 +1,22 @@
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
+function metaErrorDetail(
+  error:
+    | { code?: number; error_subcode?: number; message?: string; error_user_msg?: string }
+    | undefined,
+  responseStatus: number,
+  secret?: string,
+) {
+  const code = error?.code ?? responseStatus;
+  const subcode = error?.error_subcode ? `/${error.error_subcode}` : "";
+  const detail = (error?.error_user_msg || error?.message || "")
+    .replaceAll(secret || "\u0000", "[redacted]")
+    .replace(/[\r\n]+/g, " ")
+    .slice(0, 260);
+  return `Meta error ${code}${subcode}${detail ? `: ${detail}` : ""}`;
+}
+
 function decodeKey() {
   const keyText = process.env["WHATSAPP_TOKEN_ENCRYPTION_KEY"];
   if (!keyText) throw new Error("WhatsApp token encryption is not configured.");
@@ -36,6 +52,62 @@ export function encryptWhatsAppToken(value: string) {
   ].join(":");
 }
 
+export async function completeEmbeddedWhatsAppSignup(input: {
+  businessId: string;
+  code: string;
+  phoneNumberId: string;
+  businessAccountId: string;
+}) {
+  const appId = process.env["META_APP_ID"];
+  const appSecret = process.env["META_WHATSAPP_APP_SECRET"];
+  const version = process.env["WHATSAPP_GRAPH_API_VERSION"];
+  if (!appId || !appSecret || !version || !/^v\d+\.\d+$/.test(version)) {
+    throw new Error("Meta self-serve connection is not configured on the Veylo server.");
+  }
+
+  const tokenUrl = new URL(`https://graph.facebook.com/${version}/oauth/access_token`);
+  tokenUrl.searchParams.set("client_id", appId);
+  tokenUrl.searchParams.set("client_secret", appSecret);
+  tokenUrl.searchParams.set("code", input.code);
+  const tokenResponse = await fetch(tokenUrl, { signal: AbortSignal.timeout(12_000) });
+  const tokenData = (await tokenResponse.json().catch(() => null)) as {
+    access_token?: string;
+    error?: { code?: number };
+  } | null;
+  if (!tokenResponse.ok || !tokenData?.access_token) {
+    throw new Error(
+      `Meta could not finish the authorization (error ${tokenData?.error?.code ?? tokenResponse.status}). Please try connecting again.`,
+    );
+  }
+
+  const debugUrl = new URL(`https://graph.facebook.com/${version}/debug_token`);
+  debugUrl.searchParams.set("input_token", tokenData.access_token);
+  debugUrl.searchParams.set("access_token", `${appId}|${appSecret}`);
+  const debugResponse = await fetch(debugUrl, { signal: AbortSignal.timeout(12_000) });
+  const debugData = (await debugResponse.json().catch(() => null)) as {
+    data?: { app_id?: string; is_valid?: boolean; scopes?: string[] };
+  } | null;
+  const scopes = debugData?.data?.scopes ?? [];
+  if (
+    !debugResponse.ok ||
+    !debugData?.data?.is_valid ||
+    debugData.data.app_id !== appId ||
+    !scopes.includes("whatsapp_business_management") ||
+    !scopes.includes("whatsapp_business_messaging")
+  ) {
+    throw new Error(
+      "Meta authorization is missing required WhatsApp permissions. Reconnect and approve the requested permissions.",
+    );
+  }
+
+  await verifyAndStoreWhatsAppConnection({
+    businessId: input.businessId,
+    phoneNumberId: input.phoneNumberId,
+    businessAccountId: input.businessAccountId,
+    accessToken: tokenData.access_token,
+  });
+}
+
 export async function verifyAndStoreWhatsAppConnection(input: {
   businessId: string;
   phoneNumberId: string;
@@ -62,11 +134,11 @@ export async function verifyAndStoreWhatsAppConnection(input: {
   const phoneData = (await phoneResponse.json().catch(() => null)) as {
     id?: string;
     display_phone_number?: string;
-    error?: { code?: number };
+    error?: { code?: number; error_subcode?: number; message?: string; error_user_msg?: string };
   } | null;
   if (!phoneResponse.ok || phoneData?.id !== input.phoneNumberId) {
     throw new Error(
-      `Meta could not verify this phone number (error ${phoneData?.error?.code ?? phoneResponse.status}). Check the Phone Number ID and token permissions.`,
+      `Meta could not verify this phone number (${metaErrorDetail(phoneData?.error, phoneResponse.status, input.accessToken)}). Confirm the ID and that this token’s system user has access to the WhatsApp business account and phone-number asset.`,
     );
   }
 
@@ -80,11 +152,11 @@ export async function verifyAndStoreWhatsAppConnection(input: {
   );
   const subscription = (await subscribeResponse.json().catch(() => null)) as {
     success?: boolean;
-    error?: { code?: number };
+    error?: { code?: number; error_subcode?: number; message?: string; error_user_msg?: string };
   } | null;
   if (!subscribeResponse.ok || subscription?.success !== true) {
     throw new Error(
-      `Meta verified the phone, but webhook subscription failed (error ${subscription?.error?.code ?? subscribeResponse.status}). Check WhatsApp webhook permissions.`,
+      `Meta verified the phone, but webhook subscription failed (${metaErrorDetail(subscription?.error, subscribeResponse.status, input.accessToken)}). Check app webhook setup and WhatsApp business permissions.`,
     );
   }
 

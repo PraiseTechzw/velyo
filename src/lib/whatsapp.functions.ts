@@ -130,3 +130,60 @@ export const connectWhatsApp = createServerFn({ method: "POST" })
     });
     return { connected: true };
   });
+
+export const getWhatsAppSignupConfig = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(() => {
+    const appId = process.env["META_APP_ID"] ?? "";
+    const configId = process.env["META_EMBEDDED_SIGNUP_CONFIG_ID"] ?? "";
+    const graphVersion = process.env["WHATSAPP_GRAPH_API_VERSION"] ?? "";
+    const appSecret = process.env["META_WHATSAPP_APP_SECRET"] ?? "";
+    const encryptionKey = Buffer.from(process.env["WHATSAPP_TOKEN_ENCRYPTION_KEY"] ?? "", "base64");
+    return {
+      appId,
+      configId,
+      graphVersion,
+      configured: Boolean(
+        appId &&
+        configId &&
+        appSecret &&
+        process.env["SUPABASE_SERVICE_ROLE_KEY"] &&
+        encryptionKey.length === 32 &&
+        /^v\d+\.\d+$/.test(graphVersion),
+      ),
+    };
+  });
+
+export const completeWhatsAppSignup = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: unknown) =>
+    z
+      .object({
+        code: z.string().trim().min(20).max(5000),
+        phoneNumberId: z
+          .string()
+          .trim()
+          .regex(/^\d{5,30}$/),
+        businessAccountId: z
+          .string()
+          .trim()
+          .regex(/^\d{5,30}$/),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { data: business, error } = await context.supabase
+      .from("businesses")
+      .select("id")
+      .eq("owner_id", context.userId)
+      .maybeSingle();
+    if (error || !business) throw new Error("Only the workspace owner can connect WhatsApp.");
+    const { completeEmbeddedWhatsAppSignup } = await import("@/lib/whatsapp-cloud.server");
+    await completeEmbeddedWhatsAppSignup({
+      businessId: business.id,
+      code: data.code,
+      phoneNumberId: data.phoneNumberId,
+      businessAccountId: data.businessAccountId,
+    });
+    return { connected: true };
+  });

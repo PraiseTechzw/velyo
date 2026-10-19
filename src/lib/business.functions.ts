@@ -44,3 +44,17 @@ export const updateNotificationPreference = createServerFn({ method: "POST" })
     if (error || !updated) throw new Error("Notification preference could not be saved.");
     return { enabled: data.enabled };
   });
+
+export const updateBusinessVisibility = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: unknown) => z.object({ visible: z.boolean() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: updated, error } = await context.supabase
+      .from("businesses")
+      .update({ profile_visible: data.visible })
+      .eq("owner_id", context.userId)
+      .select("id")
+      .maybeSingle();
+    if (error || !updated) throw new Error("Business profile visibility could not be saved.");
+    return { visible: data.visible };
+  });

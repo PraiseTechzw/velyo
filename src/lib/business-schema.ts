@@ -1,5 +1,6 @@
 import { z } from "zod";
 export const businessSchema = z.object({
+  profile_visible: z.boolean(),
   display_name: z.string().trim().min(2).max(120),
   avatar_url: z.union([z.literal(""), z.string().url().startsWith("https://")]),
   name: z.string().trim().min(2).max(120),
@@ -25,6 +26,7 @@ export const businessSchema = z.object({
 });
 export type BusinessInput = z.infer<typeof businessSchema>;
 export const emptyBusiness: BusinessInput = {
+  profile_visible: true,
   display_name: "",
   avatar_url: "",
   name: "",

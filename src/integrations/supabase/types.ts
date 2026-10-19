@@ -219,6 +219,7 @@ export type Database = {
           notifications: boolean;
           operating_hours: string;
           owner_id: string;
+          profile_visible: boolean;
           products: string;
           whatsapp_business_account_id: string;
           whatsapp_phone_number_id: string;
@@ -244,6 +245,7 @@ export type Database = {
           notifications?: boolean;
           operating_hours?: string;
           owner_id: string;
+          profile_visible?: boolean;
           products?: string;
           whatsapp_business_account_id?: string;
           whatsapp_phone_number_id?: string;
@@ -269,6 +271,7 @@ export type Database = {
           notifications?: boolean;
           operating_hours?: string;
           owner_id?: string;
+          profile_visible?: boolean;
           products?: string;
           whatsapp_business_account_id?: string;
           whatsapp_phone_number_id?: string;
