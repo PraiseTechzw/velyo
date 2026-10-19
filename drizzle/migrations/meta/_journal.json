@@ -50,6 +50,13 @@
       "when": 1792370000000,
       "tag": "0006_assistant_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792450000000,
+      "tag": "0007_veylo_paynow_module",
+      "breakpoints": true
     }
   ]
 }

@@ -36,9 +36,18 @@ import { Route as AuthenticatedSettingsIntegrationsRouteImport } from './routes/
 import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings.notifications'
 import { Route as AuthenticatedSettingsSecurityRouteImport } from './routes/_authenticated/settings.security'
 import { Route as AuthenticatedSettingsTeamRouteImport } from './routes/_authenticated/settings.team'
+import { Route as AuthenticatedSettingsVeyloBillingRouteImport } from './routes/_authenticated/settings.veylo-billing'
+import { Route as AuthenticatedSettingsVeyloWhatsappRouteImport } from './routes/_authenticated/settings.veylo-whatsapp'
 import { Route as AuthenticatedSettingsWhatsappRouteImport } from './routes/_authenticated/settings.whatsapp'
 import { Route as ApiCronWhatsappRetriesRouteImport } from './routes/api.cron.whatsapp-retries'
+import { Route as ApiWebhookWhatsappRouteImport } from './routes/api.webhook.whatsapp'
 import { Route as ApiWhatsappWebhookRouteImport } from './routes/api.whatsapp.webhook'
+import { Route as ApiVeyloBillingPayRouteImport } from './routes/api.veylo.billing.pay'
+import { Route as ApiVeyloBillingPaynowCallbackRouteImport } from './routes/api.veylo.billing.paynow-callback'
+import { Route as ApiVeyloBillingSettingsRouteImport } from './routes/api.veylo.billing.settings'
+import { Route as ApiVeyloSettingsWhatsappRouteImport } from './routes/api.veylo.settings.whatsapp'
+import { Route as ApiVeyloWhatsappSendRouteImport } from './routes/api.veylo.whatsapp.send'
+import { Route as ApiVeyloWhatsappTestRouteImport } from './routes/api.veylo.whatsapp.test'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -184,6 +193,18 @@ const AuthenticatedSettingsTeamRoute =
     path: '/team',
     getParentRoute: () => AuthenticatedSettingsRoute,
   } as any)
+const AuthenticatedSettingsVeyloBillingRoute =
+  AuthenticatedSettingsVeyloBillingRouteImport.update({
+    id: '/veylo-billing',
+    path: '/veylo-billing',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
+const AuthenticatedSettingsVeyloWhatsappRoute =
+  AuthenticatedSettingsVeyloWhatsappRouteImport.update({
+    id: '/veylo-whatsapp',
+    path: '/veylo-whatsapp',
+    getParentRoute: () => AuthenticatedSettingsRoute,
+  } as any)
 const AuthenticatedSettingsWhatsappRoute =
   AuthenticatedSettingsWhatsappRouteImport.update({
     id: '/whatsapp',
@@ -195,9 +216,46 @@ const ApiCronWhatsappRetriesRoute = ApiCronWhatsappRetriesRouteImport.update({
   path: '/api/cron/whatsapp-retries',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWebhookWhatsappRoute = ApiWebhookWhatsappRouteImport.update({
+  id: '/api/webhook/whatsapp',
+  path: '/api/webhook/whatsapp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiWhatsappWebhookRoute = ApiWhatsappWebhookRouteImport.update({
   id: '/api/whatsapp/webhook',
   path: '/api/whatsapp/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVeyloBillingPayRoute = ApiVeyloBillingPayRouteImport.update({
+  id: '/api/veylo/billing/pay',
+  path: '/api/veylo/billing/pay',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVeyloBillingPaynowCallbackRoute =
+  ApiVeyloBillingPaynowCallbackRouteImport.update({
+    id: '/api/veylo/billing/paynow-callback',
+    path: '/api/veylo/billing/paynow-callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiVeyloBillingSettingsRoute = ApiVeyloBillingSettingsRouteImport.update({
+  id: '/api/veylo/billing/settings',
+  path: '/api/veylo/billing/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVeyloSettingsWhatsappRoute =
+  ApiVeyloSettingsWhatsappRouteImport.update({
+    id: '/api/veylo/settings/whatsapp',
+    path: '/api/veylo/settings/whatsapp',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiVeyloWhatsappSendRoute = ApiVeyloWhatsappSendRouteImport.update({
+  id: '/api/veylo/whatsapp/send',
+  path: '/api/veylo/whatsapp/send',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVeyloWhatsappTestRoute = ApiVeyloWhatsappTestRouteImport.update({
+  id: '/api/veylo/whatsapp/test',
+  path: '/api/veylo/whatsapp/test',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -227,10 +285,19 @@ export interface FileRoutesByFullPath {
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/settings/veylo-billing': typeof AuthenticatedSettingsVeyloBillingRoute
+  '/settings/veylo-whatsapp': typeof AuthenticatedSettingsVeyloWhatsappRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRoute
   '/api/cron/whatsapp-retries': typeof ApiCronWhatsappRetriesRoute
+  '/api/webhook/whatsapp': typeof ApiWebhookWhatsappRoute
   '/api/whatsapp/webhook': typeof ApiWhatsappWebhookRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/api/veylo/billing/pay': typeof ApiVeyloBillingPayRoute
+  '/api/veylo/billing/paynow-callback': typeof ApiVeyloBillingPaynowCallbackRoute
+  '/api/veylo/billing/settings': typeof ApiVeyloBillingSettingsRoute
+  '/api/veylo/settings/whatsapp': typeof ApiVeyloSettingsWhatsappRoute
+  '/api/veylo/whatsapp/send': typeof ApiVeyloWhatsappSendRoute
+  '/api/veylo/whatsapp/test': typeof ApiVeyloWhatsappTestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -257,10 +324,19 @@ export interface FileRoutesByTo {
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/settings/veylo-billing': typeof AuthenticatedSettingsVeyloBillingRoute
+  '/settings/veylo-whatsapp': typeof AuthenticatedSettingsVeyloWhatsappRoute
   '/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRoute
   '/api/cron/whatsapp-retries': typeof ApiCronWhatsappRetriesRoute
+  '/api/webhook/whatsapp': typeof ApiWebhookWhatsappRoute
   '/api/whatsapp/webhook': typeof ApiWhatsappWebhookRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/api/veylo/billing/pay': typeof ApiVeyloBillingPayRoute
+  '/api/veylo/billing/paynow-callback': typeof ApiVeyloBillingPaynowCallbackRoute
+  '/api/veylo/billing/settings': typeof ApiVeyloBillingSettingsRoute
+  '/api/veylo/settings/whatsapp': typeof ApiVeyloSettingsWhatsappRoute
+  '/api/veylo/whatsapp/send': typeof ApiVeyloWhatsappSendRoute
+  '/api/veylo/whatsapp/test': typeof ApiVeyloWhatsappTestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -290,10 +366,19 @@ export interface FileRoutesById {
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/_authenticated/settings/security': typeof AuthenticatedSettingsSecurityRoute
   '/_authenticated/settings/team': typeof AuthenticatedSettingsTeamRoute
+  '/_authenticated/settings/veylo-billing': typeof AuthenticatedSettingsVeyloBillingRoute
+  '/_authenticated/settings/veylo-whatsapp': typeof AuthenticatedSettingsVeyloWhatsappRoute
   '/_authenticated/settings/whatsapp': typeof AuthenticatedSettingsWhatsappRoute
   '/api/cron/whatsapp-retries': typeof ApiCronWhatsappRetriesRoute
+  '/api/webhook/whatsapp': typeof ApiWebhookWhatsappRoute
   '/api/whatsapp/webhook': typeof ApiWhatsappWebhookRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/api/veylo/billing/pay': typeof ApiVeyloBillingPayRoute
+  '/api/veylo/billing/paynow-callback': typeof ApiVeyloBillingPaynowCallbackRoute
+  '/api/veylo/billing/settings': typeof ApiVeyloBillingSettingsRoute
+  '/api/veylo/settings/whatsapp': typeof ApiVeyloSettingsWhatsappRoute
+  '/api/veylo/whatsapp/send': typeof ApiVeyloWhatsappSendRoute
+  '/api/veylo/whatsapp/test': typeof ApiVeyloWhatsappTestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -323,10 +408,19 @@ export interface FileRouteTypes {
     | '/settings/notifications'
     | '/settings/security'
     | '/settings/team'
+    | '/settings/veylo-billing'
+    | '/settings/veylo-whatsapp'
     | '/settings/whatsapp'
     | '/api/cron/whatsapp-retries'
+    | '/api/webhook/whatsapp'
     | '/api/whatsapp/webhook'
     | '/settings/'
+    | '/api/veylo/billing/pay'
+    | '/api/veylo/billing/paynow-callback'
+    | '/api/veylo/billing/settings'
+    | '/api/veylo/settings/whatsapp'
+    | '/api/veylo/whatsapp/send'
+    | '/api/veylo/whatsapp/test'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -353,10 +447,19 @@ export interface FileRouteTypes {
     | '/settings/notifications'
     | '/settings/security'
     | '/settings/team'
+    | '/settings/veylo-billing'
+    | '/settings/veylo-whatsapp'
     | '/settings/whatsapp'
     | '/api/cron/whatsapp-retries'
+    | '/api/webhook/whatsapp'
     | '/api/whatsapp/webhook'
     | '/settings'
+    | '/api/veylo/billing/pay'
+    | '/api/veylo/billing/paynow-callback'
+    | '/api/veylo/billing/settings'
+    | '/api/veylo/settings/whatsapp'
+    | '/api/veylo/whatsapp/send'
+    | '/api/veylo/whatsapp/test'
   id:
     | '__root__'
     | '/'
@@ -385,10 +488,19 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/notifications'
     | '/_authenticated/settings/security'
     | '/_authenticated/settings/team'
+    | '/_authenticated/settings/veylo-billing'
+    | '/_authenticated/settings/veylo-whatsapp'
     | '/_authenticated/settings/whatsapp'
     | '/api/cron/whatsapp-retries'
+    | '/api/webhook/whatsapp'
     | '/api/whatsapp/webhook'
     | '/_authenticated/settings/'
+    | '/api/veylo/billing/pay'
+    | '/api/veylo/billing/paynow-callback'
+    | '/api/veylo/billing/settings'
+    | '/api/veylo/settings/whatsapp'
+    | '/api/veylo/whatsapp/send'
+    | '/api/veylo/whatsapp/test'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -397,7 +509,14 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiCronWhatsappRetriesRoute: typeof ApiCronWhatsappRetriesRoute
+  ApiWebhookWhatsappRoute: typeof ApiWebhookWhatsappRoute
   ApiWhatsappWebhookRoute: typeof ApiWhatsappWebhookRoute
+  ApiVeyloBillingPayRoute: typeof ApiVeyloBillingPayRoute
+  ApiVeyloBillingPaynowCallbackRoute: typeof ApiVeyloBillingPaynowCallbackRoute
+  ApiVeyloBillingSettingsRoute: typeof ApiVeyloBillingSettingsRoute
+  ApiVeyloSettingsWhatsappRoute: typeof ApiVeyloSettingsWhatsappRoute
+  ApiVeyloWhatsappSendRoute: typeof ApiVeyloWhatsappSendRoute
+  ApiVeyloWhatsappTestRoute: typeof ApiVeyloWhatsappTestRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -591,6 +710,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsTeamRouteImport
       parentRoute: typeof AuthenticatedSettingsRoute
     }
+    '/_authenticated/settings/veylo-billing': {
+      id: '/_authenticated/settings/veylo-billing'
+      path: '/veylo-billing'
+      fullPath: '/settings/veylo-billing'
+      preLoaderRoute: typeof AuthenticatedSettingsVeyloBillingRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
+    '/_authenticated/settings/veylo-whatsapp': {
+      id: '/_authenticated/settings/veylo-whatsapp'
+      path: '/veylo-whatsapp'
+      fullPath: '/settings/veylo-whatsapp'
+      preLoaderRoute: typeof AuthenticatedSettingsVeyloWhatsappRouteImport
+      parentRoute: typeof AuthenticatedSettingsRoute
+    }
     '/_authenticated/settings/whatsapp': {
       id: '/_authenticated/settings/whatsapp'
       path: '/whatsapp'
@@ -605,11 +738,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCronWhatsappRetriesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/webhook/whatsapp': {
+      id: '/api/webhook/whatsapp'
+      path: '/api/webhook/whatsapp'
+      fullPath: '/api/webhook/whatsapp'
+      preLoaderRoute: typeof ApiWebhookWhatsappRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/whatsapp/webhook': {
       id: '/api/whatsapp/webhook'
       path: '/api/whatsapp/webhook'
       fullPath: '/api/whatsapp/webhook'
       preLoaderRoute: typeof ApiWhatsappWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/veylo/billing/pay': {
+      id: '/api/veylo/billing/pay'
+      path: '/api/veylo/billing/pay'
+      fullPath: '/api/veylo/billing/pay'
+      preLoaderRoute: typeof ApiVeyloBillingPayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/veylo/billing/paynow-callback': {
+      id: '/api/veylo/billing/paynow-callback'
+      path: '/api/veylo/billing/paynow-callback'
+      fullPath: '/api/veylo/billing/paynow-callback'
+      preLoaderRoute: typeof ApiVeyloBillingPaynowCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/veylo/billing/settings': {
+      id: '/api/veylo/billing/settings'
+      path: '/api/veylo/billing/settings'
+      fullPath: '/api/veylo/billing/settings'
+      preLoaderRoute: typeof ApiVeyloBillingSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/veylo/settings/whatsapp': {
+      id: '/api/veylo/settings/whatsapp'
+      path: '/api/veylo/settings/whatsapp'
+      fullPath: '/api/veylo/settings/whatsapp'
+      preLoaderRoute: typeof ApiVeyloSettingsWhatsappRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/veylo/whatsapp/send': {
+      id: '/api/veylo/whatsapp/send'
+      path: '/api/veylo/whatsapp/send'
+      fullPath: '/api/veylo/whatsapp/send'
+      preLoaderRoute: typeof ApiVeyloWhatsappSendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/veylo/whatsapp/test': {
+      id: '/api/veylo/whatsapp/test'
+      path: '/api/veylo/whatsapp/test'
+      fullPath: '/api/veylo/whatsapp/test'
+      preLoaderRoute: typeof ApiVeyloWhatsappTestRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -624,6 +806,8 @@ interface AuthenticatedSettingsRouteChildren {
   AuthenticatedSettingsNotificationsRoute: typeof AuthenticatedSettingsNotificationsRoute
   AuthenticatedSettingsSecurityRoute: typeof AuthenticatedSettingsSecurityRoute
   AuthenticatedSettingsTeamRoute: typeof AuthenticatedSettingsTeamRoute
+  AuthenticatedSettingsVeyloBillingRoute: typeof AuthenticatedSettingsVeyloBillingRoute
+  AuthenticatedSettingsVeyloWhatsappRoute: typeof AuthenticatedSettingsVeyloWhatsappRoute
   AuthenticatedSettingsWhatsappRoute: typeof AuthenticatedSettingsWhatsappRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
@@ -639,6 +823,10 @@ const AuthenticatedSettingsRouteChildren: AuthenticatedSettingsRouteChildren = {
     AuthenticatedSettingsNotificationsRoute,
   AuthenticatedSettingsSecurityRoute: AuthenticatedSettingsSecurityRoute,
   AuthenticatedSettingsTeamRoute: AuthenticatedSettingsTeamRoute,
+  AuthenticatedSettingsVeyloBillingRoute:
+    AuthenticatedSettingsVeyloBillingRoute,
+  AuthenticatedSettingsVeyloWhatsappRoute:
+    AuthenticatedSettingsVeyloWhatsappRoute,
   AuthenticatedSettingsWhatsappRoute: AuthenticatedSettingsWhatsappRoute,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
 }
@@ -691,7 +879,14 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ApiCronWhatsappRetriesRoute: ApiCronWhatsappRetriesRoute,
+  ApiWebhookWhatsappRoute: ApiWebhookWhatsappRoute,
   ApiWhatsappWebhookRoute: ApiWhatsappWebhookRoute,
+  ApiVeyloBillingPayRoute: ApiVeyloBillingPayRoute,
+  ApiVeyloBillingPaynowCallbackRoute: ApiVeyloBillingPaynowCallbackRoute,
+  ApiVeyloBillingSettingsRoute: ApiVeyloBillingSettingsRoute,
+  ApiVeyloSettingsWhatsappRoute: ApiVeyloSettingsWhatsappRoute,
+  ApiVeyloWhatsappSendRoute: ApiVeyloWhatsappSendRoute,
+  ApiVeyloWhatsappTestRoute: ApiVeyloWhatsappTestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

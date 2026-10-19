@@ -10,17 +10,20 @@ import {
   Settings2,
   ShieldCheck,
   Users,
+  WalletCards,
 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/whatsapp-icon";
 
 const settingsLinks = [
   { to: "/settings/", label: "Business Profile", icon: Building2 },
   { to: "/settings/whatsapp", label: "WhatsApp Integration", icon: WhatsAppIcon },
+  { to: "/settings/veylo-whatsapp", label: "Veylo WhatsApp", icon: WhatsAppIcon },
   { to: "/settings/assistant", label: "AI Assistant", icon: Bot },
   { to: "/settings/team", label: "Team & Permissions", icon: Users },
   { to: "/settings/automations", label: "Automations", icon: Settings2 },
   { to: "/settings/notifications", label: "Notifications", icon: BellRing },
   { to: "/settings/billing", label: "Plan & Billing", icon: CreditCard },
+  { to: "/settings/veylo-billing", label: "Veylo Billing", icon: WalletCards },
   { to: "/settings/security", label: "Security & Privacy", icon: ShieldCheck },
   { to: "/settings/integrations", label: "Integrations & API", icon: Plug },
   { to: "/settings/help", label: "Help & Support", icon: CircleHelp },
@@ -48,7 +51,7 @@ export function SettingsLayout({ children }: { children: ReactNode }) {
               }}
               className="relative flex shrink-0 items-center gap-3 rounded-xl px-3 py-3 text-sm transition-colors"
             >
-              <Icon className={`h-4 w-4 ${to === "/settings/whatsapp" ? "text-[#25D366]" : ""}`} />
+              <Icon className={`h-4 w-4 ${to === "/settings/whatsapp" || to === "/settings/veylo-whatsapp" ? "text-[#25D366]" : ""}`} />
               {label}
             </Link>
           ))}
