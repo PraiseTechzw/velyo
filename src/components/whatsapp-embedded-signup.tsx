@@ -8,7 +8,13 @@ import { getWhatsAppSignupConfig, completeWhatsAppSignup } from "@/lib/whatsapp.
 type SignupAssets = { phoneNumberId: string; businessAccountId: string };
 type FacebookLoginResponse = { authResponse?: { code?: string }; status?: string };
 type FacebookSdk = {
-  init: (options: { appId: string; cookie: boolean; xfbml: boolean; version: string }) => void;
+  init: (options: {
+    appId: string;
+    autoLogAppEvents: boolean;
+    cookie: boolean;
+    xfbml: boolean;
+    version: string;
+  }) => void;
   login: (
     callback: (response: FacebookLoginResponse) => void,
     options: { config_id: string; response_type: "code"; override_default_response_type: true },
@@ -128,8 +134,9 @@ export function WhatsAppEmbeddedSignup({ onManualFallback }: { onManualFallback?
       if (cancelled || !window.FB) return;
       window.FB.init({
         appId: data.appId,
+        autoLogAppEvents: true,
         cookie: true,
-        xfbml: false,
+        xfbml: true,
         version: data.graphVersion,
       });
       setSdkReady(true);
