@@ -110,7 +110,7 @@ function waitForSignupAssets(signal: AbortSignal) {
   });
 }
 
-export function WhatsAppEmbeddedSignup() {
+export function WhatsAppEmbeddedSignup({ onManualFallback }: { onManualFallback?: () => void }) {
   const { data, isPending, isError } = useQuery(configQuery);
   const queryClient = useQueryClient();
   const completeSignup = useServerFn(completeWhatsAppSignup);
@@ -150,6 +150,7 @@ export function WhatsAppEmbeddedSignup() {
         script.remove();
         if (!cancelled) {
           setSdkLoadFailed(true);
+          onManualFallback?.();
           setError(
             "Your browser could not download Meta’s sign-in library. This is a network or browser blocking issue, not a WhatsApp connection error.",
           );
@@ -160,7 +161,7 @@ export function WhatsAppEmbeddedSignup() {
     return () => {
       cancelled = true;
     };
-  }, [data, sdkLoadAttempt]);
+  }, [data, sdkLoadAttempt, onManualFallback]);
 
   async function connect() {
     if (!window.FB || !data?.configured) return;

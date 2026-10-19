@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -31,6 +31,7 @@ import {
   connectWhatsApp,
   getWhatsAppConnection,
   getWhatsAppSignupConfig,
+  getWhatsAppTemplates,
 } from "@/lib/whatsapp.functions";
 
 const businessQuery = { queryKey: ["business"], queryFn: () => getBusiness() };
@@ -50,18 +51,40 @@ export function WhatsAppIntegrationPage() {
   const connection = useQuery(connectionQuery);
   const metrics = useQuery(metricsQuery);
   const config = useQuery(configQuery);
+  const templates = useQuery({
+    queryKey: ["whatsapp-templates"],
+    queryFn: () => getWhatsAppTemplates(),
+    enabled: connection.data?.status === "connected",
+    staleTime: 60_000,
+  });
   const connect = useServerFn(connectWhatsApp);
   const [phoneNumberId, setPhoneNumberId] = useState("");
   const [businessAccountId, setBusinessAccountId] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [connectionError, setConnectionError] = useState("");
   const [connecting, setConnecting] = useState(false);
+  const [manualSetupOpen, setManualSetupOpen] = useState(false);
+  const [webhookTest, setWebhookTest] = useState("");
+  const [testingWebhook, setTestingWebhook] = useState(false);
+  const showManualSetup = useCallback(() => setManualSetupOpen(true), []);
   const [webhookUrl, setWebhookUrl] = useState("/api/whatsapp/webhook");
   const [copied, setCopied] = useState("");
   const business = data.business;
   const integration = connection.data;
   const status = integration?.status ?? "not connected";
   const connected = status === "connected";
+  const templateRecords = templates.data?.templates ?? [];
+  const welcomeTemplate = findTemplate(templateRecords, /welcome|hello|greeting/i);
+  const orderTemplate = findTemplate(templateRecords, /order|shipping|delivery|update/i);
+  const appointmentTemplate = findTemplate(templateRecords, /appointment|reminder|booking/i);
+  const categorizedIds = new Set(
+    [welcomeTemplate, orderTemplate, appointmentTemplate]
+      .filter((template): template is WhatsAppTemplate => Boolean(template))
+      .map((template) => template.id),
+  );
+  const otherTemplateCount = templateRecords.filter(
+    (template) => !categorizedIds.has(template.id),
+  ).length;
 
   useEffect(() => {
     setWebhookUrl(`${window.location.origin}/api/whatsapp/webhook`);
@@ -74,6 +97,28 @@ export function WhatsAppIntegrationPage() {
       window.setTimeout(() => setCopied(""), 1600);
     } catch {
       setConnectionError("Clipboard access is unavailable in this browser.");
+    }
+  }
+
+  async function testWebhook() {
+    setTestingWebhook(true);
+    setWebhookTest("");
+    try {
+      const response = await fetch(webhookUrl, { headers: { accept: "text/plain" } });
+      const body = await response.text();
+      if (response.status === 403 && body.includes("Webhook verification failed")) {
+        setWebhookTest(
+          "Endpoint is reachable. Meta's verification handshake has not been run by this check.",
+        );
+      } else if (response.ok) {
+        setWebhookTest("Endpoint responded successfully.");
+      } else {
+        setWebhookTest(`Endpoint returned HTTP ${response.status}.`);
+      }
+    } catch {
+      setWebhookTest("The webhook endpoint could not be reached from this browser.");
+    } finally {
+      setTestingWebhook(false);
     }
   }
 
@@ -238,7 +283,11 @@ export function WhatsAppIntegrationPage() {
                 {connectionError}
               </p>
             )}
-            <details className="mt-3 rounded-lg border border-[#e4ebf0] px-3 py-2">
+            <details
+              open={manualSetupOpen}
+              onToggle={(event) => setManualSetupOpen(event.currentTarget.open)}
+              className="mt-3 rounded-lg border border-[#e4ebf0] px-3 py-2"
+            >
               <summary className="cursor-pointer text-xs font-medium text-[#36516f]">
                 Advanced manual setup
               </summary>
@@ -409,13 +458,22 @@ export function WhatsAppIntegrationPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  disabled
-                  title="Remote webhook tests are not available yet"
+                  onClick={testWebhook}
+                  disabled={testingWebhook}
                   className="mt-3 h-8 border-[#dbe4ed] text-[10px]"
                 >
-                  <Webhook className="h-3.5 w-3.5" />
-                  Test webhook
+                  {testingWebhook ? (
+                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  ) : (
+                    <Webhook className="h-3.5 w-3.5" />
+                  )}
+                  {testingWebhook ? "Checking…" : "Test webhook"}
                 </Button>
+                {webhookTest && (
+                  <p role="status" className="mt-2 text-[10px] leading-4 text-[#55718e]">
+                    {webhookTest}
+                  </p>
+                )}
               </div>
               <div className="rounded-xl border border-[#e8edf1] p-4">
                 <h3 className="text-xs font-semibold text-[#173a5b]">Events handled by Veylo</h3>
@@ -443,24 +501,61 @@ export function WhatsAppIntegrationPage() {
                 </p>
               </div>
               <Button
+                asChild
                 variant="outline"
                 size="sm"
-                disabled
-                title="Template management is not connected yet"
+                disabled={!connected}
                 className="h-8 border-[#dbe4ed] text-[10px]"
               >
-                <FileText className="h-3.5 w-3.5" />
-                Manage templates
+                <a
+                  href={`https://business.facebook.com/latest/whatsapp_manager/message_templates/?business_id=${encodeURIComponent(integration?.business_account_id ?? "")}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <FileText className="h-3.5 w-3.5" />
+                  Manage templates <ExternalLink className="h-3 w-3" />
+                </a>
               </Button>
             </div>
             <div className="mt-3 grid gap-2 sm:grid-cols-2 2xl:grid-cols-4">
-              <TemplateCard icon={MessageSquare} title="Welcome message" />
-              <TemplateCard icon={ShoppingCart} title="Order update" />
-              <TemplateCard icon={CalendarDays} title="Appointment reminder" />
-              <TemplateCard icon={FileText} title="Custom template" />
+              <TemplateCard
+                icon={MessageSquare}
+                title="Welcome message"
+                template={welcomeTemplate}
+                state={templateState(templates, connected)}
+              />
+              <TemplateCard
+                icon={ShoppingCart}
+                title="Order update"
+                template={orderTemplate}
+                state={templateState(templates, connected)}
+              />
+              <TemplateCard
+                icon={CalendarDays}
+                title="Appointment reminder"
+                template={appointmentTemplate}
+                state={templateState(templates, connected)}
+              />
+              <TemplateCard
+                icon={FileText}
+                title="Custom templates"
+                state={templateState(templates, connected)}
+                detail={
+                  otherTemplateCount
+                    ? `${otherTemplateCount} template${otherTemplateCount === 1 ? "" : "s"}`
+                    : undefined
+                }
+              />
             </div>
+            {templates.isError && (
+              <p role="alert" className="mt-3 text-[10px] text-amber-800">
+                Meta templates could not be loaded. Reconnect WhatsApp or check that the account has
+                template permissions.
+              </p>
+            )}
             <p className="mt-3 text-[10px] text-[#7188a5]">
-              Template records and approval statuses are not connected to this workspace yet.
+              Approval statuses are read from the connected WhatsApp Business account. Create or
+              edit templates in Meta Business Manager.
             </p>
           </section>
         </div>
@@ -468,7 +563,7 @@ export function WhatsAppIntegrationPage() {
 
       {(!connected || status === "pending") && (
         <div className="xl:ml-[calc(29.05%-0.75rem)]">
-          <WhatsAppEmbeddedSignup />
+          <WhatsAppEmbeddedSignup onManualFallback={showManualSetup} />
         </div>
       )}
 
@@ -560,14 +655,57 @@ function EventRow({ active, label }: { active: boolean; label: string }) {
     </li>
   );
 }
-function TemplateCard({ icon: Icon, title }: { icon: typeof MessageSquare; title: string }) {
+type WhatsAppTemplate = {
+  id: string;
+  name: string;
+  status: string;
+  category: string;
+  language: string;
+};
+function findTemplate(templates: WhatsAppTemplate[], pattern: RegExp) {
+  return templates.find((template) => pattern.test(template.name));
+}
+function templateState(query: { isPending: boolean; isError: boolean }, connected: boolean) {
+  if (!connected) return "Connect WhatsApp first";
+  if (query.isPending) return "Loading templates…";
+  if (query.isError) return "Unable to load";
+  return "Not configured";
+}
+function formatTemplateStatus(status: string) {
+  return status
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+function TemplateCard({
+  icon: Icon,
+  title,
+  template,
+  state,
+  detail,
+}: {
+  icon: typeof MessageSquare;
+  title: string;
+  template?: WhatsAppTemplate;
+  state: string;
+  detail?: string;
+}) {
+  const approved = template?.status.toUpperCase() === "APPROVED";
   return (
     <div className="flex min-h-14 items-center gap-2 rounded-xl border border-[#e4ebf0] px-3 py-2">
       <Icon className="h-4 w-4 shrink-0 text-[#087b59]" />
       <div className="min-w-0">
         <p className="truncate text-[10px] font-medium text-[#173a5b]">{title}</p>
-        <p className="mt-0.5 text-[9px] text-[#7188a5]">Not configured</p>
+        <p className="mt-0.5 truncate text-[9px] text-[#7188a5]">
+          {template ? `${template.name} · ${template.language}` : (detail ?? state)}
+        </p>
       </div>
+      <span
+        className={`ml-auto shrink-0 rounded-full px-2 py-1 text-[9px] font-medium ${approved ? "bg-[#e8f7f0] text-[#00864c]" : "bg-[#f2f5f8] text-[#61758b]"}`}
+      >
+        {template ? formatTemplateStatus(template.status) : detail ? "In Meta" : "—"}
+      </span>
     </div>
   );
 }

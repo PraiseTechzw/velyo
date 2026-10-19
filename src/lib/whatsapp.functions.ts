@@ -41,6 +41,20 @@ export const getWhatsAppConnection = createServerFn({ method: "GET" })
     return data;
   });
 
+export const getWhatsAppTemplates = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: business, error } = await context.supabase
+      .from("businesses")
+      .select("id")
+      .eq("owner_id", context.userId)
+      .maybeSingle();
+    if (error) throw new Error("WhatsApp templates could not be loaded.");
+    if (!business) return { connected: false as const, templates: [] };
+    const { fetchWhatsAppTemplates } = await import("@/lib/whatsapp-cloud.server");
+    return fetchWhatsAppTemplates(business.id);
+  });
+
 export const getWhatsAppMessages = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) =>

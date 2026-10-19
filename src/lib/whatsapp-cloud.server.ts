@@ -52,6 +52,72 @@ export function encryptWhatsAppToken(value: string) {
   ].join(":");
 }
 
+export async function fetchWhatsAppTemplates(businessId: string) {
+  const version = process.env["WHATSAPP_GRAPH_API_VERSION"];
+  if (!version || !/^v\d+\.\d+$/.test(version)) {
+    throw new Error("WhatsApp template lookup is not configured on this server.");
+  }
+  const [
+    { data: integration, error: integrationError },
+    { data: credentials, error: credentialsError },
+  ] = await Promise.all([
+    supabaseAdmin
+      .from("whatsapp_integrations")
+      .select("business_account_id,status")
+      .eq("business_id", businessId)
+      .maybeSingle(),
+    supabaseAdmin
+      .from("business_credentials")
+      .select("encrypted_token")
+      .eq("business_id", businessId)
+      .maybeSingle(),
+  ]);
+  if (integrationError || credentialsError) {
+    throw new Error("WhatsApp templates could not be loaded.");
+  }
+  if (integration?.status !== "connected" || !credentials?.encrypted_token) {
+    return { connected: false as const, templates: [] };
+  }
+
+  const accessToken = decryptWhatsAppToken(credentials.encrypted_token);
+  const url = new URL(
+    `https://graph.facebook.com/${version}/${encodeURIComponent(integration.business_account_id)}/message_templates`,
+  );
+  url.searchParams.set("fields", "id,name,status,category,language");
+  url.searchParams.set("limit", "100");
+  const response = await fetch(url, {
+    headers: { authorization: `Bearer ${accessToken}` },
+    signal: AbortSignal.timeout(12_000),
+  });
+  const result = (await response.json().catch(() => null)) as {
+    data?: Array<Record<string, unknown>>;
+  } | null;
+  if (!response.ok || !Array.isArray(result?.data)) {
+    throw new Error(
+      "Meta could not load message templates. Check the WhatsApp account permissions.",
+    );
+  }
+
+  const templates = result.data.flatMap((item) => {
+    const id = item["id"];
+    const name = item["name"];
+    const status = item["status"];
+    const category = item["category"];
+    const language = item["language"];
+    if (
+      typeof id !== "string" ||
+      typeof name !== "string" ||
+      typeof status !== "string" ||
+      typeof category !== "string" ||
+      typeof language !== "string"
+    ) {
+      return [];
+    }
+    return [{ id, name, status, category, language }];
+  });
+  return { connected: true as const, templates };
+}
+
 export async function completeEmbeddedWhatsAppSignup(input: {
   businessId: string;
   code: string;
