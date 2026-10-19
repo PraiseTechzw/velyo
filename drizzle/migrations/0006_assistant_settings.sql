@@ -9,3 +9,4 @@ ALTER TABLE public.businesses
   ADD COLUMN recommend_products boolean NOT NULL DEFAULT true,
   ADD COLUMN handle_order_inquiries boolean NOT NULL DEFAULT true,
   ADD COLUMN escalate_to_human boolean NOT NULL DEFAULT true;
+EAAP2CulZCLiEBSzAMelLrVCyA0woPUy2nzxV5OUVZBZCah14xGsTeb6jadZCdfosQVfoeRjhxq1MTSxCZB4dypmboukTVDOYFlLcXIKcWiVZAprsLZBGaTx7fLn6ODngXqosNvF48i0rxFUWtkZAfpLZC3kADQFBeKYaeI8GnfoaoSZAz4S7kWkaWiizOYlI0ZA3IOBAwZDZD
