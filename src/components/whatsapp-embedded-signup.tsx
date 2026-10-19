@@ -145,7 +145,6 @@ export function WhatsAppEmbeddedSignup({ onManualFallback }: { onManualFallback?
       script.src = "https://connect.facebook.net/en_US/sdk.js";
       script.async = true;
       script.defer = true;
-      script.crossOrigin = "anonymous";
       script.onerror = () => {
         script.remove();
         if (!cancelled) {
