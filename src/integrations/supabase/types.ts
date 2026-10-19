@@ -67,7 +67,14 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
         };
-        Update: { display_name?: string; is_lead?: boolean; lead_status?: string; lead_interest?: string; lead_source?: string; updated_at?: string };
+        Update: {
+          display_name?: string;
+          is_lead?: boolean;
+          lead_status?: string;
+          lead_interest?: string;
+          lead_source?: string;
+          updated_at?: string;
+        };
         Relationships: [];
       };
       conversations: {
@@ -199,6 +206,16 @@ export type Database = {
       };
       businesses: {
         Row: {
+          assistant_name: string;
+          assistant_tone: string;
+          assistant_language: string;
+          assistant_fallback_message: string;
+          answer_product_questions: boolean;
+          provide_business_information: boolean;
+          capture_leads: boolean;
+          recommend_products: boolean;
+          handle_order_inquiries: boolean;
+          escalate_to_human: boolean;
           address: string;
           ai_instructions: string;
           contact_email: string;
@@ -225,6 +242,16 @@ export type Database = {
           whatsapp_phone_number_id: string;
         };
         Insert: {
+          assistant_name?: string;
+          assistant_tone?: string;
+          assistant_language?: string;
+          assistant_fallback_message?: string;
+          answer_product_questions?: boolean;
+          provide_business_information?: boolean;
+          capture_leads?: boolean;
+          recommend_products?: boolean;
+          handle_order_inquiries?: boolean;
+          escalate_to_human?: boolean;
           address?: string;
           ai_instructions?: string;
           contact_email?: string;
@@ -251,6 +278,16 @@ export type Database = {
           whatsapp_phone_number_id?: string;
         };
         Update: {
+          assistant_name?: string;
+          assistant_tone?: string;
+          assistant_language?: string;
+          assistant_fallback_message?: string;
+          answer_product_questions?: boolean;
+          provide_business_information?: boolean;
+          capture_leads?: boolean;
+          recommend_products?: boolean;
+          handle_order_inquiries?: boolean;
+          escalate_to_human?: boolean;
           address?: string;
           ai_instructions?: string;
           contact_email?: string;

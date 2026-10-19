@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { businessSchema } from "./business-schema";
+import { assistantSettingsSchema } from "./assistant-schema";
 import { z } from "zod";
 export const getBusiness = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -57,4 +58,18 @@ export const updateBusinessVisibility = createServerFn({ method: "POST" })
       .maybeSingle();
     if (error || !updated) throw new Error("Business profile visibility could not be saved.");
     return { visible: data.visible };
+  });
+
+export const saveAssistantSettings = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: unknown) => assistantSettingsSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: updated, error } = await context.supabase
+      .from("businesses")
+      .update(data)
+      .eq("owner_id", context.userId)
+      .select("id")
+      .maybeSingle();
+    if (error || !updated) throw new Error("AI assistant settings could not be saved.");
+    return { id: updated.id };
   });

@@ -34,7 +34,7 @@ export const getWhatsAppConnection = createServerFn({ method: "GET" })
     if (!business) return null;
     const { data, error } = await context.supabase
       .from("whatsapp_integrations")
-      .select("status,display_phone_number,last_error,verified_at,business_account_id")
+      .select("status,display_phone_number,last_error,verified_at,business_account_id,created_at")
       .eq("business_id", business.id)
       .maybeSingle();
     if (error) throw new Error("WhatsApp connection status could not be loaded.");
